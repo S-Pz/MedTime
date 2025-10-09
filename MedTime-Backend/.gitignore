@@ -1,5 +1,5 @@
 #Directory
-src/generated/
+/src/generated/
 node_modules
 
 #Files
