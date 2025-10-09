@@ -1,5 +1,5 @@
 #Directory
-/src/generated/prisma
+src/generated/
 node_modules
 
 #Files
