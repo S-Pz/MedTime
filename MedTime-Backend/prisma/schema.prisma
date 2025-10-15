@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
@@ -12,4 +6,76 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model usuario {
+  id_usuario  Int   @id @default(autoincrement())
+  cpf         String @unique
+  nome        String
+  senha       String
+
+  paciente    paciente?
+  funcionario funcionario?
+}
+
+model paciente {
+  id_usuario  Int  @id
+  endereco    String?
+  telefone    String?
+
+  usuario usuario @relation(fields: [id_usuario], references: [id_usuario])
+  agenda_consulta agenda_consulta[]
+
+}
+
+model funcionario {
+  id_usuario Int @id
+  id_unidade Int
+  is_admin   Boolean?
+
+  usuario usuario @relation(fields: [id_usuario], references: [id_usuario])
+  unidade unidade @relation(fields: [id_unidade], references: [id_unidade])
+}
+
+model unidade {
+  id_unidade    Int   @id @default(autoincrement())
+  endereco      String?
+  nome          String?
+
+  funcionario   funcionario[]
+  calendario_medico calendario_medico[]
+}
+
+model calendario_medico {
+  id_calendario_medico Int      @id @default(autoincrement())
+  id_medico            Int
+  id_unidade           Int
+  dia_semana           DateTime
+  horario_inicio       DateTime?
+  horario_fim          DateTime?
+
+  medico  medico  @relation(fields: [id_medico], references: [id_medico])
+  unidade unidade @relation(fields: [id_unidade], references: [id_unidade])
+  
+  agenda_consulta agenda_consulta[]
+}
+
+model agenda_consulta {
+  id_consulta          Int      @id @default(autoincrement())
+  id_usuario           Int
+  id_calendario_medico Int
+  status               String?
+  tempo_consulta       DateTime?
+
+  paciente          paciente          @relation(fields: [id_usuario], references: [id_usuario])
+  calendario_medico calendario_medico @relation(fields: [id_calendario_medico], references: [id_calendario_medico])
+}
+
+model medico {
+  id_medico      Int    @id @default(autoincrement())
+  crm            Int    @unique
+  nome           String
+  especialidade  String
+
+  calendario_medico calendario_medico[]
 }
