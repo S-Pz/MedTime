@@ -13,6 +13,7 @@ Este projeto tem como objetivo ilustrar a modelagem de dados de um sistema de ag
 <details>
 <summary><strong>Configurações BackEnd</strong></summary>
 
+
 1. [Configuração do ambiente](#ConfiguracaoDoAmbiente)
 2. [Instalação e configuração do Prisma](#InstalacaoEConfiguracaoDoPrisma)
 
@@ -103,14 +104,14 @@ O Prisma Studio abrirá em: [http://localhost:5555](http://localhost:5555)
 ## 🧱 Exemplo de schema (resumido)
 
 ```prisma
-model usuario {
+model Usuario {
 id_usuario  Int   @id @default(autoincrement())
 cpf         String @unique
 nome        String
 senha       String
 
-paciente    paciente?
-funcionario funcionario?
+paciente    Paciente?
+funcionario Funcionario?
 }
 ```
 
