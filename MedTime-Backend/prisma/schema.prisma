@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
+  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -8,45 +8,44 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model usuario {
+model Usuario {
   id_usuario  Int   @id @default(autoincrement())
   cpf         String @unique
   nome        String
   senha       String
 
-  paciente    paciente?
-  funcionario funcionario?
+  paciente    Paciente?
+  funcionario Funcionario?
 }
 
-model paciente {
+model Paciente {
   id_usuario  Int  @id
   endereco    String?
   telefone    String?
 
-  usuario usuario @relation(fields: [id_usuario], references: [id_usuario])
-  agenda_consulta agenda_consulta[]
-
+  usuario Usuario @relation(fields: [id_usuario], references: [id_usuario])
+  agenda_consulta AgendaConsulta[]
 }
 
-model funcionario {
+model Funcionario {
   id_usuario Int @id
   id_unidade Int
   is_admin   Boolean?
 
-  usuario usuario @relation(fields: [id_usuario], references: [id_usuario])
-  unidade unidade @relation(fields: [id_unidade], references: [id_unidade])
+  usuario Usuario @relation(fields: [id_usuario], references: [id_usuario])
+  unidade Unidade @relation(fields: [id_unidade], references: [id_unidade])
 }
 
-model unidade {
+model Unidade {
   id_unidade    Int   @id @default(autoincrement())
   endereco      String?
   nome          String?
 
-  funcionario   funcionario[]
-  calendario_medico calendario_medico[]
+  funcionario   Funcionario[]
+  calendario_medico CalendarioMedico[]
 }
 
-model calendario_medico {
+model CalendarioMedico {
   id_calendario_medico Int      @id @default(autoincrement())
   id_medico            Int
   id_unidade           Int
@@ -54,28 +53,28 @@ model calendario_medico {
   horario_inicio       DateTime?
   horario_fim          DateTime?
 
-  medico  medico  @relation(fields: [id_medico], references: [id_medico])
-  unidade unidade @relation(fields: [id_unidade], references: [id_unidade])
+  medico  Medico  @relation(fields: [id_medico], references: [id_medico])
+  unidade Unidade @relation(fields: [id_unidade], references: [id_unidade])
   
-  agenda_consulta agenda_consulta[]
+  agenda_consulta AgendaConsulta[]
 }
 
-model agenda_consulta {
+model AgendaConsulta {
   id_consulta          Int      @id @default(autoincrement())
   id_usuario           Int
   id_calendario_medico Int
   status               String?
   tempo_consulta       DateTime?
 
-  paciente          paciente          @relation(fields: [id_usuario], references: [id_usuario])
-  calendario_medico calendario_medico @relation(fields: [id_calendario_medico], references: [id_calendario_medico])
+  paciente          Paciente          @relation(fields: [id_usuario], references: [id_usuario])
+  calendario_medico CalendarioMedico @relation(fields: [id_calendario_medico], references: [id_calendario_medico])
 }
 
-model medico {
+model Medico {
   id_medico      Int    @id @default(autoincrement())
   crm            Int    @unique
   nome           String
   especialidade  String
 
-  calendario_medico calendario_medico[]
+  calendario_medico CalendarioMedico[]
 }
