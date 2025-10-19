@@ -42,7 +42,7 @@ export  async function buscarPaciente (req, res) {
 
 export async function atualizarPaciente (req, res) {
     
-    const { id } = req.params;
+    const {id} = req.params;
     const resultado = await pacienteService.atualizarPaciente(id, req.body);
 
     if (!resultado.success) {
@@ -64,6 +64,6 @@ export async function deletarPaciente (req, res) {
             error: resultado.error 
         });
     }
-    
+
     res.status(204).send();
 };
