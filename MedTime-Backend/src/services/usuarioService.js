@@ -1,9 +1,8 @@
 import {prisma} from '../config/prismaClient'
 
-async function criarUsuario (usuario) {
+export async function criarUsuario (usuario) {
     
     try {
-        
         const novoUsuario = await prisma.usuario.create({
             data: usuario,
         });
@@ -32,11 +31,13 @@ async function criarUsuario (usuario) {
     }
 }
 
-async function buscarPorId (id) {
+export async function buscarPorId (id) {
     
     try {
         const usuario = await prisma.usuario.findUnique({
-            where: {id_usuario: parseInt(id)}
+            where: {
+                id_usuario: parseInt(id)
+            },
         });
 
         if(!usuario) {
@@ -62,7 +63,7 @@ async function buscarPorId (id) {
     }
 }
 
-async function buscarTodos () {
+export async function buscarTodos () {
     
     try {
         const usuarios = await prisma.usuario.findMany();
@@ -82,11 +83,13 @@ async function buscarTodos () {
     }
 }
 
-async function atualizarUsuario (id, usuario){
+export async function atualizarUsuario (id, usuario){
     
     try {
         const usuarioAtualizado = await prisma.usuario.update({
-            where: { id_usuario: parseInt(id) },
+            where: { 
+                id_usuario: parseInt(id)
+            },
             data: usuario,
         });
 
@@ -122,11 +125,13 @@ async function atualizarUsuario (id, usuario){
     }
 }
 
-async function deletarUsuario (id) {
+export async function deletarUsuario (id) {
     
     try {
         await prisma.usuario.delete({
-            where: { id_usuario: parseInt(id) },
+            where: { 
+                id_usuario: parseInt(id)
+            },
         });
         
         return { 
@@ -159,12 +164,4 @@ async function deletarUsuario (id) {
             status: 500 
         };
     }
-}
-
-module.export = {
-    criarUsuario,
-    buscarPorId,
-    buscarTodos,
-    atualizarUsuario,
-    deletarUsuario
 }
