@@ -1,7 +1,8 @@
-import { Router } from 'express';
-import * as funcionarioController from '../controllers/funcionarioController.js';
+const express = require('express');
 
-const router = Router();
+const funcionarioController = require ('../controllers/funcionarioController');
+
+const router = express.Router();
 
 // POST /funcionarios
 router.post('/', funcionarioController.criarFuncionario);
@@ -18,4 +19,4 @@ router.put('/:id', funcionarioController.atualizarFuncionario);
 // DELETE /funcionarios/:id
 router.delete('/:id', funcionarioController.deletarFuncionario);
 
-export default router;
+module.exports = router;

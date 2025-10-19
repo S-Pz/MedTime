@@ -1,7 +1,8 @@
-import {Router} from 'express';
-import * as pacienteController from '../controllers/pacienteController.js';
+const express = require('express');
 
-const router = Router();
+const pacienteController = require ('../controllers/pacienteController');
+
+const router = express.Router();
 
 // POST /pacientes
 router.post('/', pacienteController.criarPaciente);
@@ -18,4 +19,4 @@ router.put('/:id', pacienteController.atualizarPaciente);
 // DELETE /pacientes/:id
 router.delete('/:id', pacienteController.deletarPaciente);
 
-export default router;
+module.exports = router;

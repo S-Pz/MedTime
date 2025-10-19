@@ -1,6 +1,6 @@
-import {prisma} from "../config/prismaClient";
+const prisma = require ('../config/prismaClient'); 
 
-export async function criarFuncionario (funcionario) {
+async function criarFuncionario (funcionario) {
   
     try {
         const novoFuncionario = await prisma.usuario.create({
@@ -60,7 +60,7 @@ export async function criarFuncionario (funcionario) {
     }
 };
 
-export async function buscarPorId (id) {
+async function buscarPorId (id) {
     
     try {
         const funcionario = await prisma.funcionario.findUnique({
@@ -97,7 +97,7 @@ export async function buscarPorId (id) {
     }
 };
 
-export async function buscarTodos () {
+async function buscarTodos () {
     
     try {
         const funcionarios = await prisma.funcionario.findMany({
@@ -123,7 +123,7 @@ export async function buscarTodos () {
     }
 };
 
-export async function atualizarFuncionario (id, funcionario) {
+async function atualizarFuncionario (id, funcionario) {
   
     try {
         const funcionarioAtualizado = await prisma.usuario.update({
@@ -185,7 +185,7 @@ export async function atualizarFuncionario (id, funcionario) {
     }
 };
 
-export async function deleteFuncionario (id) {
+async function deleteFuncionario (id) {
     
     try {
         
@@ -226,3 +226,11 @@ export async function deleteFuncionario (id) {
         };
     }
 };
+
+module.exports = {
+    criarFuncionario,
+    buscarPorId,
+    buscarTodos,
+    atualizarFuncionario,
+    deleteFuncionario
+}

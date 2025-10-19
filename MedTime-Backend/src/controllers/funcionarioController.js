@@ -1,6 +1,6 @@
-import * as funcionarioService from '../services/funcionarioService.js';
+const funcionarioService = require ('../services/funcionarioService');
 
-export async function criarFuncionario (req, res) {
+async function criarFuncionario (req, res) {
     
     const resultado = await funcionarioService.criarFuncionario(req.body);
 
@@ -13,7 +13,7 @@ export async function criarFuncionario (req, res) {
     res.status(201).json(resultado.data);
 };
 
-export async function listarFuncionarios (req, res) {
+async function listarFuncionarios (req, res) {
 
     const resultado = await funcionarioService.buscarTodos();
 
@@ -26,7 +26,7 @@ export async function listarFuncionarios (req, res) {
     res.status(200).json(resultado.data);
 };
 
-export async function buscarFuncionario (req, res) {
+async function buscarFuncionario (req, res) {
 
     const {id} = req.params;
     const resultado = await funcionarioService.buscarPorId(id);
@@ -40,7 +40,7 @@ export async function buscarFuncionario (req, res) {
     res.status(200).json(resultado.data);
 };
 
-export async function atualizarFuncionario (req, res) {
+async function atualizarFuncionario (req, res) {
   
     const {id} = req.params;
     const resultado = await funcionarioService.atualizarFuncionario(id, req.body);
@@ -54,7 +54,7 @@ export async function atualizarFuncionario (req, res) {
     res.status(200).json(resultado.data);
 };
 
-export async function deletarFuncionario (req, res) {
+async function deletarFuncionario (req, res) {
     
     const {id} = req.params;
     const resultado = await funcionarioService.deleteFuncionario(id);
@@ -67,3 +67,11 @@ export async function deletarFuncionario (req, res) {
     
     res.status(204).send(); 
 };
+
+module.exports = {
+    criarFuncionario,
+    listarFuncionarios,
+    buscarFuncionario,
+    atualizarFuncionario,
+    deletarFuncionario
+}

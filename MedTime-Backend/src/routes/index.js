@@ -1,13 +1,14 @@
-import {Router} from 'express';
+const express = require('express');
 
-import usuarioRoutes from './usuarioRoutes.js';
-import pacienteRoutes from './pacienteRoutes.js';
-import funcionarioRoutes from './funcionarioRoutes.js';
+const usuarioRoutes = require ('./usuarioRoute');
+const pacienteRoutes = require ('./pacienteRoute');
+const funcionarioRoutes = require ('./funcionarioRoute');
 
-const router = Router();
+const router = express.Router();
 
-router.use('/usuarios', usuarioRoutes);
 router.use('/usuarios/pacientes', pacienteRoutes);
 router.use('/usuarios/funcionarios', funcionarioRoutes);
 
-export default router;
+router.use('/usuarios', usuarioRoutes);
+
+module.exports = router;

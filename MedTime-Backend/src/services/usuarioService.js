@@ -1,6 +1,6 @@
-import {prisma} from '../config/prismaClient'
+const prisma = require ('../config/prismaClient');
 
-export async function criarUsuario (usuario) {
+async function criarUsuario (usuario) {
     
     try {
         const novoUsuario = await prisma.usuario.create({
@@ -31,7 +31,7 @@ export async function criarUsuario (usuario) {
     }
 }
 
-export async function buscarPorId (id) {
+async function buscarPorId (id) {
     
     try {
         const usuario = await prisma.usuario.findUnique({
@@ -63,7 +63,7 @@ export async function buscarPorId (id) {
     }
 }
 
-export async function buscarTodos () {
+async function buscarTodos () {
     
     try {
         const usuarios = await prisma.usuario.findMany();
@@ -83,7 +83,7 @@ export async function buscarTodos () {
     }
 }
 
-export async function atualizarUsuario (id, usuario){
+async function atualizarUsuario (id, usuario){
     
     try {
         const usuarioAtualizado = await prisma.usuario.update({
@@ -125,7 +125,7 @@ export async function atualizarUsuario (id, usuario){
     }
 }
 
-export async function deletarUsuario (id) {
+async function deletarUsuario (id) {
     
     try {
         await prisma.usuario.delete({
@@ -164,4 +164,12 @@ export async function deletarUsuario (id) {
             status: 500 
         };
     }
+}
+
+module.exports = {
+    criarUsuario,
+    buscarPorId,
+    buscarTodos,
+    atualizarUsuario,
+    deletarUsuario
 }

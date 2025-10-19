@@ -1,6 +1,6 @@
-import * as pacienteService from '../services/pacienteService.js';
+const pacienteService = require ('../services/pacienteService');
 
-export async function criarPaciente (req, res) {
+async function criarPaciente (req, res) {
     
     const resultado = await pacienteService.criarPaciente(req.body);
 
@@ -13,7 +13,7 @@ export async function criarPaciente (req, res) {
     res.status(201).json(resultado.data);
 };
 
-export async function listarPacientes (req, res) {
+async function listarPacientes (req, res) {
     
     const resultado = await pacienteService.buscarTodos();
 
@@ -26,7 +26,7 @@ export async function listarPacientes (req, res) {
     res.status(200).json(resultado.data); 
 };
 
-export  async function buscarPaciente (req, res) {
+ async function buscarPaciente (req, res) {
     
     const {id} = req.params;
     const resultado = await pacienteService.buscarPorId(id);
@@ -40,7 +40,7 @@ export  async function buscarPaciente (req, res) {
     res.status(200).json(resultado.data);
 };
 
-export async function atualizarPaciente (req, res) {
+async function atualizarPaciente (req, res) {
     
     const {id} = req.params;
     const resultado = await pacienteService.atualizarPaciente(id, req.body);
@@ -54,7 +54,7 @@ export async function atualizarPaciente (req, res) {
     res.status(200).json(resultado.data); 
 };
 
-export async function deletarPaciente (req, res) {
+async function deletarPaciente (req, res) {
     
     const {id} = req.params;
     const resultado = await pacienteService.deletePaciente(id);
@@ -67,3 +67,11 @@ export async function deletarPaciente (req, res) {
 
     res.status(204).send();
 };
+
+module.exports = {
+    criarPaciente,
+    listarPacientes,
+    buscarPaciente,
+    atualizarPaciente,
+    deletarPaciente
+}

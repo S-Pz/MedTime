@@ -1,6 +1,6 @@
-import { prisma } from '../config/prismaClient.js'; 
+const prisma = require ('../config/prismaClient'); 
 
-export async function criarPaciente (paciente) {
+async function criarPaciente (paciente) {
   
     try {
         const novoPaciente = await prisma.usuario.create({
@@ -44,7 +44,7 @@ export async function criarPaciente (paciente) {
     }
 };
 
-export async function buscarPorId (id) {
+async function buscarPorId (id) {
     
     try {
         const paciente = await prisma.paciente.findUnique({
@@ -80,7 +80,7 @@ export async function buscarPorId (id) {
     }
 };
 
-export async function buscarTodos () {
+async function buscarTodos () {
   
     try {
         const pacientes = await prisma.paciente.findMany({
@@ -105,7 +105,7 @@ export async function buscarTodos () {
     }
 };
 
-export async function atualizarPaciente (id, paciente) {
+async function atualizarPaciente (id, paciente) {
   
     try {
         const pacienteAtualizado = await prisma.usuario.update({
@@ -159,7 +159,7 @@ export async function atualizarPaciente (id, paciente) {
     }
 };
 
-export async function deletePaciente (id) {
+async function deletePaciente (id) {
   
     try {
         const deletePaciente = prisma.paciente.delete({
@@ -207,3 +207,11 @@ export async function deletePaciente (id) {
         };
     }
 };
+
+module.exports = {
+    criarPaciente,
+    buscarPorId,
+    buscarTodos,
+    atualizarPaciente,
+    deletePaciente
+}
