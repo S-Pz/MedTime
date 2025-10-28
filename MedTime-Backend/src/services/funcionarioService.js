@@ -1,13 +1,18 @@
 const prisma = require ('../config/prismaClient'); 
+const bcrypt = require ('bcryptjs');
 
 async function criarFuncionario (funcionario) {
   
     try {
+        
+        const salt = await bcrypt.genSalt(10);
+        const senhaHash = await bcrypt.hash(funcionario.senha, salt);
+
         const novoFuncionario = await prisma.usuario.create({
             data: {
                 cpf: funcionario.cpf,
                 nome: funcionario.nome,
-                senha: funcionario.senha, 
+                senha: senhaHash, 
                 funcionario: { 
                     create: {
                         is_admin: funcionario.is_admin,
@@ -27,6 +32,9 @@ async function criarFuncionario (funcionario) {
                 },
             },
         });
+
+        // Remove a senha da resposta
+        delete novoFuncionario.senha;
 
         return { 
             success: true,
@@ -126,24 +134,33 @@ async function buscarTodos () {
 async function atualizarFuncionario (id, funcionario) {
   
     try {
+        
+        const dadosAtualizacaoFuncionario = {
+            
+            nome : funcionario.nome,
+            funcionario: {
+                update: {
+                    is_admin: funcionario.is_admin,
+                    unidade: funcionario.id_unidade ? {
+                        connect: { 
+                            id_unidade: parseInt(funcionario.id_unidade)
+                        }
+                    } : undefined,
+                },
+            },
+        }
+
+        if (funcionario.senha && funcionario.senha.trim() !== '') {
+            const salt = await bcrypt.genSalt(10);
+            
+            dadosAtualizacaoFuncionario.senha = await bcrypt.hash(funcionario.senha, salt);
+        }
+
         const funcionarioAtualizado = await prisma.usuario.update({
             where: { 
                 id_usuario: parseInt(id)
             },
-            data: {
-                nome: funcionario.nome,
-                senha: funcionario.senha,
-                funcionario: {
-                    update: {
-                        is_admin: funcionario.is_admin,
-                        unidade: funcionario.id_unidade ? {
-                            connect: { 
-                                id_unidade: parseInt(funcionario.id_unidade)
-                            }
-                        } : undefined,
-                    },
-                },
-            },
+            data: dadosAtualizacaoFuncionario,
             include: {
                 funcionario: {
                     include: {
@@ -153,6 +170,8 @@ async function atualizarFuncionario (id, funcionario) {
             },
         });
         
+        delete funcionarioAtualizado.senha;
+
         return { 
             success: true,
             data: funcionarioAtualizado

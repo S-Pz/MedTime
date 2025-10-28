@@ -1,11 +1,23 @@
 const prisma = require ('../config/prismaClient');
+const bcrypt = require ('bcryptjs');
 
 async function criarUsuario (usuario) {
     
     try {
+        
+        const salt = await bcrypt.genSalt(10);
+        const senhaHash = await bcrypt.hash(usuario.senha, salt);
+
         const novoUsuario = await prisma.usuario.create({
-            data: usuario,
+            data: {
+                nome: usuario.nome,
+                cpf: usuario.cpf,
+                senha: senhaHash,
+            },
         });
+
+        // Remove a senha da resposta
+        delete novoUsuario.senha;
 
         return {
             success: true,
@@ -86,6 +98,12 @@ async function buscarTodos () {
 async function atualizarUsuario (id, usuario){
     
     try {
+
+        if (usuario.senha) {
+            const salt = await bcrypt.genSalt(10);
+            usuario.senha = await bcrypt.hash(usuario.senha, salt);
+        }
+
         const usuarioAtualizado = await prisma.usuario.update({
             where: { 
                 id_usuario: parseInt(id)
@@ -93,6 +111,8 @@ async function atualizarUsuario (id, usuario){
             data: usuario,
         });
 
+        delete usuarioAtualizado.senha;
+        
         return { 
             success: true,
             data: usuarioAtualizado

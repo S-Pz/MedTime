@@ -1,14 +1,23 @@
 const express = require('express');
 
 const funcionarioController = require ('../controllers/funcionarioController');
+const authMiddleware = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
 // POST /funcionarios
-router.post('/', funcionarioController.criarFuncionario);
+router.post('/', 
+    authMiddleware.verificarToken,
+    authMiddleware.verificarPermissao(['admin']),
+    funcionarioController.criarFuncionario
+);
 
 // GET /funcionarios
-router.get('/', funcionarioController.listarFuncionarios);
+router.get('/', 
+    authMiddleware.verificarToken,
+    authMiddleware.verificarPermissao(['admin', 'funcionario']),
+    funcionarioController.listarFuncionarios
+);
 
 // GET /funcionarios/:id
 router.get('/:id', funcionarioController.buscarFuncionario);

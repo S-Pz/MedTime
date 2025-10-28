@@ -1,13 +1,18 @@
 const prisma = require ('../config/prismaClient'); 
+const bcrypt = require('bcryptjs');
 
 async function criarPaciente (paciente) {
   
     try {
+        
+        const salt = await bcrypt.genSalt(10);
+        const senhaHash = await bcrypt.hash(paciente.senha, salt);
+
         const novoPaciente = await prisma.usuario.create({
             data: {
                 cpf: paciente.cpf,
                 nome: paciente.nome,
-                senha: paciente.senha,
+                senha: senhaHash,
                 paciente: { 
                     create: {
                         endereco: paciente.endereco,
@@ -19,6 +24,9 @@ async function criarPaciente (paciente) {
                 paciente: true, 
             },
         });
+
+        // Remove a senha da resposta
+        delete novoPaciente.senha;
 
         return { 
             success: true, 
@@ -108,24 +116,34 @@ async function buscarTodos () {
 async function atualizarPaciente (id, paciente) {
   
     try {
+        
+        const dadosAtualizacaoPaciente = {
+            nome: paciente.nome,
+            paciente: {
+                update: {
+                    endereco: paciente.endereco,
+                    telefone: paciente.telefone,
+                },
+            },
+        };
+
+        if (paciente.senha && paciente.senha.trim() !== '') {
+            const salt = await bcrypt.genSalt(10);
+            
+            dadosAtualizacaoPaciente.senha = await bcrypt.hash(paciente.senha, salt);
+        }
+
         const pacienteAtualizado = await prisma.usuario.update({
             where: { 
                 id_usuario: parseInt(id)
             },
-            data: {
-                nome: paciente.nome,
-                senha: paciente.senha,
-                paciente: {
-                    update: {
-                        endereco: paciente.endereco,
-                        telefone: paciente.telefone,
-                    },
-                },
-            },
+            data: dadosAtualizacaoPaciente,
             include: {
                 paciente: true,
             },
         });
+        
+        delete pacienteAtualizado.senha;
         
         return { 
             success: true,
