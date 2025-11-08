@@ -12,6 +12,7 @@ model Usuario {
   id_usuario  Int   @id @default(autoincrement())
   cpf         String @unique
   nome        String
+  email       String @unique
   senha       String
 
   paciente    Paciente?
@@ -23,8 +24,32 @@ model Paciente {
   endereco    String?
   telefone    String?
 
-  usuario Usuario @relation(fields: [id_usuario], references: [id_usuario])
+  ficha_medica FichaMedica?
+  
+  usuario Usuario @relation(fields: [id_usuario], references: [id_usuario], onDelete: Cascade)
   agenda_consulta AgendaConsulta[]
+
+}
+
+model FichaMedica {
+  id_ficha_medica   Int     @id @default(autoincrement())
+  id_usuario        Int     @unique 
+
+  tipo_sanguineo      String?  
+  data_ultimo_checkup DateTime? 
+  altura_m            Float?    
+  peso_kg             Float?    
+  notas_estilo_vida   String?   @db.Text
+  
+  contato_emerg_nome  String?
+  contato_emerg_fone  String?
+
+  alergias           String[] 
+  condicoes_cronicas String[] 
+  medicamentos       String[] 
+  vacinacoes         String[] 
+
+  paciente Paciente @relation(fields: [id_usuario], references: [id_usuario], onDelete: Cascade)
 }
 
 model Funcionario {

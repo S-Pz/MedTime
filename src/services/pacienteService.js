@@ -5,23 +5,33 @@ async function criarPaciente (paciente) {
   
     try {
         
+        const {cpf, nome, email, senha, endereco, telefone, ...dadosFicha} = paciente;
+
         const salt = await bcrypt.genSalt(10);
         const senhaHash = await bcrypt.hash(paciente.senha, salt);
 
         const novoPaciente = await prisma.usuario.create({
             data: {
-                cpf: paciente.cpf,
-                nome: paciente.nome,
+                cpf: cpf,
+                nome: nome,
+                email: email,
                 senha: senhaHash,
                 paciente: { 
                     create: {
-                        endereco: paciente.endereco,
-                        telefone: paciente.telefone,
+                        endereco: endereco,
+                        telefone: telefone,
+                        ficha_medica: {
+                            create: dadosFicha
+                        }
                     },
                 },
             },
             include: {
-                paciente: true, 
+                paciente: {
+                    include:{
+                        ficha_medica: true
+                    }
+                }, 
             },
         });
 
@@ -61,6 +71,7 @@ async function buscarPorId (id) {
             }, 
             include: {
                 usuario: true,
+                ficha_medica: true
             },
         });
 
@@ -94,6 +105,7 @@ async function buscarTodos () {
         const pacientes = await prisma.paciente.findMany({
             include: {
                 usuario: true,
+                ficha_medica: true
             },
         });
 
@@ -117,12 +129,21 @@ async function atualizarPaciente (id, paciente) {
   
     try {
         
+       const {cpf, nome, email, senha, endereco, telefone, ...dadosFicha} = paciente;
+
         const dadosAtualizacaoPaciente = {
-            nome: paciente.nome,
+            nome: nome,
             paciente: {
                 update: {
-                    endereco: paciente.endereco,
-                    telefone: paciente.telefone,
+                    endereco: endereco,
+                    telefone: telefone,
+
+                    ficha_medica:{
+                        upsert:{
+                            create:dadosFicha,
+                            update: dadosFicha
+                        }
+                    }
                 },
             },
         };
@@ -139,7 +160,11 @@ async function atualizarPaciente (id, paciente) {
             },
             data: dadosAtualizacaoPaciente,
             include: {
-                paciente: true,
+                paciente: {
+                    include:{
+                        ficha_medica: true
+                    }
+                },
             },
         });
         
