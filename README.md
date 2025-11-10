@@ -76,7 +76,13 @@ npx prisma db pull
 
 Se a conexão estiver correta, não aparecerá erro.
 
-5. **Crie as tabelas com o migrate:**
+5. **Comando para deletar as tabelas**
+
+```bash
+npx prisma migrate reset
+```
+
+6. **Crie as tabelas com o migrate:**
 
 ```bash
 npx prisma migrate dev --name init
@@ -87,13 +93,13 @@ Isso:
 * Gera o arquivo de migração em `/prisma/migrations/`
 * Cria as tabelas no banco conforme seu schema
 
-6. **Gerar o Prisma Client (para usar no código):**
+7. **Gerar o Prisma Client (para usar no código):**
 
 ```bash
 npx prisma generate
 ```
 
-7. **Abrir o Prisma Studio (interface web para visualizar os dados):**
+8. **Abrir o Prisma Studio (interface web para visualizar os dados):**
 
 ```bash
 npx prisma studio
