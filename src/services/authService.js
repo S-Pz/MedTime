@@ -43,12 +43,16 @@ async function loginFuncionario(cpf, senha) {
             expiresIn: '8h', // Token expira em 8 horas
         });
 
+        const decodedToken = jwt.decode(token);
+        const expiresAt = decodedToken.exp * 1000;
+
         const responseData = {
             status: true,
             data: {
                 token,
                 nome: usuario.nome,
                 role: role,
+                expiresAt: expiresAt
             },
         };
 
@@ -108,12 +112,17 @@ async function loginPaciente(cpf, senha) {
             expiresIn: '8h',
         });
 
+        const decodedToken = jwt.decode(token);
+        const expiresAt = decodedToken.exp * 1000;
+
         const responseData = {
             status: true,
             data: {
                 token,
+                id: usuario.id_usuario,
                 nome: usuario.nome,
                 role: role,
+                expiresAt: expiresAt
             },
         };
 
