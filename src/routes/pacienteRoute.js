@@ -36,7 +36,8 @@ router.delete('/me',
 router.get('/', 
     authMiddleware.verificarToken, 
     authMiddleware.verificarPermissao(['admin']),
-    pacienteController.listarPacientes);
+    pacienteController.listarPacientes
+);
 
 // GET /pacientes/:id
 router.get('/:id', 
@@ -49,7 +50,8 @@ router.get('/:id',
 router.put('/:id', 
     authMiddleware.verificarToken,
     authMiddleware.verificarPermissao(['admin']),
-    pacienteController.atualizarPaciente);
+    pacienteController.atualizarPaciente
+);
 
 // DELETE /pacientes/:id
 router.delete('/:id', 

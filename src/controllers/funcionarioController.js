@@ -68,10 +68,53 @@ async function deletarFuncionario (req, res) {
     res.status(204).send(); 
 };
 
+// Funções para o funcionario logado
+async function buscarMeuPerfil(req, res) {
+    
+    const {id} = req.usuario;
+    const resultado = await funcionarioService.buscarPorId(id);
+
+    if (!resultado.success) {
+        return res.status(resultado.status).json({
+            error: resultado.error
+        });
+    }
+    res.status(200).json(resultado.data);
+};
+
+async function atualizarMeuPerfil(req, res) {
+
+    const {id} = req.usuario;
+    const resultado = await funcionarioService.atualizarFuncionario(id, req.body);
+
+    if (!resultado.success) {
+        return res.status(resultado.status).json({
+            error: resultado.error
+        });
+    }
+    res.status(200).json(resultado.data);
+};
+
+async function deletarMeuPerfil(req, res) {
+
+    const {id} = req.usuario;
+    const resultado = await funcionarioService.deleteFuncionario(id);
+
+    if (!resultado.success) {
+        return res.status(resultado.status).json({
+            error: resultado.erro
+        });
+    }
+    res.status(204).send();
+};
+
 module.exports = {
     criarFuncionario,
     listarFuncionarios,
     buscarFuncionario,
     atualizarFuncionario,
-    deletarFuncionario
+    deletarFuncionario,
+    buscarMeuPerfil,
+    atualizarMeuPerfil,
+    deletarMeuPerfil
 }
