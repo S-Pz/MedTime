@@ -8,6 +8,30 @@ const router = express.Router();
 // POST /pacientes
 router.post('/', pacienteController.criarPaciente);
 
+//--Paciente LOGADO
+//Paciente buscar o próprio perfil
+router.get('/me',
+    authMiddleware.verificarToken,
+    authMiddleware.verificarPermissao(['paciente']),
+    pacienteController.buscarMeuPerfil
+);
+
+//Paciente atualizar o próprio perfil
+router.put('/me',
+    authMiddleware.verificarToken,
+    authMiddleware.verificarPermissao(['paciente']),
+    pacienteController.atualizarMeuPerfil
+);
+
+//Paciente deleta o próprio perfil
+router.delete('/me',
+    authMiddleware.verificarToken,
+    authMiddleware.verificarPermissao(['paciente']),
+    pacienteController.deletarMeuPerfil
+);
+
+// --Rotas para ADMIN
+
 // GET /pacientes
 router.get('/', 
     authMiddleware.verificarToken, 
@@ -24,7 +48,7 @@ router.get('/:id',
 // PUT /pacientes/:id
 router.put('/:id', 
     authMiddleware.verificarToken,
-    authMiddleware.verificarPermissao(['admin', 'paciente']),
+    authMiddleware.verificarPermissao(['admin']),
     pacienteController.atualizarPaciente);
 
 // DELETE /pacientes/:id

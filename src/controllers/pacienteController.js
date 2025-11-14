@@ -68,10 +68,53 @@ async function deletarPaciente (req, res) {
     res.status(204).send();
 };
 
+// Funções para o paciente logado
+async function buscarMeuPerfil(req, res) {
+
+    const {id} = req.usuario;
+    const resultado = await pacienteService.buscarPorId(id)
+
+    if (!resultado.success) {
+        return res.status(resultado.status).json({
+            error: resultado.error
+        });
+    }
+    res.status(200).json(resultado.data);
+};
+
+async function atualizarMeuPerfil(req, res) {
+
+    const {id} = req.usuario;
+    const resultado = await pacienteService.atualizarPaciente(id, req.body);
+
+    if (!resultado.success) {
+        return res.status(resultado.status).json({
+            error: resultado.error
+        });
+    }
+    res.status(200).json(resultado.data);
+};
+
+async function deletarMeuPerfil(req, res) {
+
+    const {id} = req.usuario;
+    const resultado = await pacienteService.deletePaciente(id);
+
+    if (!resultado.success) {
+        return res.status(resultado.status).json({
+            error: resultado.error
+        });
+    }
+    res.status(204).send();
+};
+
 module.exports = {
     criarPaciente,
     listarPacientes,
     buscarPaciente,
     atualizarPaciente,
-    deletarPaciente
+    deletarPaciente,
+    buscarMeuPerfil,
+    atualizarMeuPerfil,
+    deletarMeuPerfil
 }
