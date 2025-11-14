@@ -1,6 +1,7 @@
 const express = require('express');
 
 const pacienteController = require ('../controllers/pacienteController');
+const fichaMedicaController = require('../controllers/fichaMedicaController');
 const authMiddleware = require('../middleware/authMiddleware');
 
 const router = express.Router();
@@ -28,6 +29,21 @@ router.delete('/me',
     authMiddleware.verificarToken,
     authMiddleware.verificarPermissao(['paciente']),
     pacienteController.deletarMeuPerfil
+);
+
+// --Rotas ficha médica para o paciente logado
+//Paciente busca a própria ficha
+router.get('/me/ficha-medica',
+    authMiddleware.verificarToken,
+    authMiddleware.verificarPermissao(['paciente']),
+    fichaMedicaController.buscarMinhaFicha
+);
+
+//Paciente atualiza a própria ficha
+router.put('/me/ficha-medica',
+    authMiddleware.verificarToken,
+    authMiddleware.verificarPermissao(['paciente']),
+    fichaMedicaController.atualizarMinhaFicha
 );
 
 // --Rotas para ADMIN
@@ -58,6 +74,22 @@ router.delete('/:id',
     authMiddleware.verificarToken,
     authMiddleware.verificarPermissao(['admin', 'paciente']),
     pacienteController.deletarPaciente
+);
+
+// --- Rotas da ficha médica (ADMIN/FUNCIONÁRIO)
+
+//Admin/Funcinário busca ficha de um paciente
+router.get('/:id/ficha-medica',
+    authMiddleware.verificarToken,
+    authMiddleware.verificarPermissao(['admin', 'funcionario']),
+    fichaMedicaController.buscarFichaPaciente
+);
+
+//Admin/Funcinário atualiza ficha de um paciente
+router.put('/:id/ficha-medica',
+    authMiddleware.verificarToken,
+    authMiddleware.verificarPermissao(['admin', 'funcionario']),
+    fichaMedicaController.atualizarFichaPaciente
 );
 
 module.exports = router;
