@@ -7,6 +7,7 @@ const authRoutes = require('./authRoutes');
 
 const unidadeRoutes = require('./unidadeRoutes');
 const medicoRoutes = require('./medicoRoute');
+const calendarioRoutes = require('./calendarioRoutes');
 
 const router = express.Router();
 
@@ -15,6 +16,7 @@ router.use(authRoutes);
 
 router.use('/unidades', unidadeRoutes);
 router.use('/medicos', medicoRoutes);
+router.use('/calendarios', calendarioRoutes);
 
 router.use('/usuarios/pacientes', pacienteRoutes);
 router.use('/usuarios/funcionarios', funcionarioRoutes);
