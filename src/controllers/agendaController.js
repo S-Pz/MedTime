@@ -29,7 +29,9 @@ async function listarMinhasConsultas(req, res) {
 
 async function listarTodasConsultas(req, res) {
     
-    const resultado = await agendaService.buscarTodasConsultas();
+    const { dataInicio, dataFim } = req.query;
+
+    const resultado = await agendaService.buscarTodasConsultas(dataInicio, dataFim);
     if (!resultado.success) {
         return res.status(resultado.status).json({
             error: resultado.error

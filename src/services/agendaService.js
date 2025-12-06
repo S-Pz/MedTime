@@ -117,10 +117,29 @@ async function buscarConsultaPorId(id_consulta) {
     }
 }
 
-async function buscarTodasConsultas() {
+async function buscarTodasConsultas(dataInicio, dataFim) {
     
     try {
+
+        let whereFiltro = {};
+
+        if (dataInicio || dataFim) {
+            
+            whereFiltro.calendario_medico = {
+                dia_semana: {}
+            };
+
+            if (dataInicio) {
+                whereFiltro.calendario_medico.dia_semana.gte = new Date(dataInicio);
+            }
+
+            if (dataFim) {
+                whereFiltro.calendario_medico.dia_semana.lte = new Date(dataFim);
+            }
+        }
+
         const consultas = await prisma.agendaConsulta.findMany({
+            where: whereFiltro,
             include: {
                 paciente: {
                     include: { 
