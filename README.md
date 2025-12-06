@@ -159,4 +159,9 @@ npx prisma studio
 ```bash
 npm run dev
 ```
+
+# Gerador de JWT-Secret
+Para gerar seu seacret do autentication JWT pode-se utilizar esse site:
+
+[JWT-Seacret](https://jwtgenerator.com/tools/jwt-generator)
 </details>
