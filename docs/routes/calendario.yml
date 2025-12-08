@@ -1,0 +1,142 @@
+paths:
+  /calendarios:
+    get:
+      summary: Listar Todos os Calendários
+      tags: [Calendários]
+      description: Retorna a agenda completa de todos os médicos e unidades. Apenas para gestão interna.
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Lista de calendários retornada.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id_calendario_medico:
+                      type: integer
+                    dia_semana:
+                      type: string
+                      format: date-time
+                    horario_inicio:
+                      type: string
+                      format: date-time
+                    horario_fim:
+                      type: string
+                      format: date-time
+                    medico:
+                      type: object
+                      properties:
+                        nome:
+                          type: string
+                    unidade:
+                      type: object
+                      properties:
+                        nome:
+                          type: string
+        403:
+          description: Acesso negado. Requer perfil de Funcionário ou Admin.
+
+    post:
+      summary: Criar Horário no Calendário
+      tags: [Calendários]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id_medico, id_unidade, dia_semana, horario_inicio, horario_fim]
+              properties:
+                id_medico:
+                  type: integer
+                  description: ID do médico que atenderá.
+                  example: 1
+                id_unidade:
+                  type: integer
+                  description: ID da unidade onde ocorrerá o atendimento.
+                  example: 1
+                dia_semana:
+                  type: string
+                  format: date-time
+                  description: Data base do dia de atendimento.
+                  example: "2024-10-25T00:00:00.000Z"
+                horario_inicio:
+                  type: string
+                  format: date-time
+                  description: Horário de início do turno.
+                  example: "2024-10-25T08:00:00.000Z"
+                horario_fim:
+                  type: string
+                  format: date-time
+                  description: Horário de fim do turno.
+                  example: "2024-10-25T12:00:00.000Z"
+      responses:
+        201:
+          description: Calendário criado com sucesso.
+        404:
+          description: Médico ou Unidade não encontrados.
+
+  /calendarios/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        description: ID do registro de calendário
+    
+    get:
+      summary: Buscar Calendário por ID
+      tags: [Calendários]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Detalhes do horário encontrado.
+        404:
+          description: Registro não encontrado.
+
+    put:
+      summary: Atualizar Calendário
+      tags: [Calendários]
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id_medico:
+                  type: integer
+                id_unidade:
+                  type: integer
+                dia_semana:
+                  type: string
+                  format: date-time
+                horario_inicio:
+                  type: string
+                  format: date-time
+                horario_fim:
+                  type: string
+                  format: date-time
+      responses:
+        200:
+          description: Horário atualizado com sucesso.
+
+    delete:
+      summary: Deletar Calendário
+      tags: [Calendários]
+      security:
+        - bearerAuth: []
+      responses:
+        204:
+          description: Registro deletado com sucesso.
+        409:
+          description: Não é possível deletar pois já existem consultas agendadas neste horário.

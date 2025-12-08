@@ -1,0 +1,58 @@
+paths:
+  /login/paciente:
+    post:
+      summary: Login de Paciente
+      tags: [Autenticação]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - cpf
+                - senha
+              properties:
+                cpf:
+                  type: string
+                  example: "12345678900"
+                senha:
+                  type: string
+                  example: "senhaSegura123"
+      responses:
+        200:
+          description: Login realizado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        401:
+          description: Credenciais inválidas
+
+  /login/funcionario:
+    post:
+      summary: Login de Funcionário/Admin
+      tags: [Autenticação]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - cpf
+                - senha
+              properties:
+                cpf:
+                  type: string
+                  example: "98765432100"
+                senha:
+                  type: string
+                  example: "admin123"
+      responses:
+        200:
+          description: Login realizado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'

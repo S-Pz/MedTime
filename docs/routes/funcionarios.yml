@@ -1,0 +1,167 @@
+paths:
+  # ==========================================
+  # ROTAS DO FUNCIONÁRIO LOGADO (MEU PERFIL)
+  # ==========================================
+  /usuarios/funcionarios/me:
+    get:
+      summary: Buscar Meu Perfil (Funcionario Logado)
+      tags: [Funcionários - Área do Usuário]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Dados do funcionário logado retornados.
+    
+    put:
+      summary: Atualizar Meu Perfil
+      tags: [Funcionários - Área do Usuário]
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nome:
+                  type: string
+                  example: "Carlos Atendente"
+                senha:
+                  type: string
+                  example: "novaSenha123"
+      responses:
+        200:
+          description: Perfil atualizado com sucesso.
+
+    delete:
+      summary: Deletar Meu Perfil
+      tags: [Funcionários - Área do Usuário]
+      security:
+        - bearerAuth: []
+      responses:
+        204:
+          description: Conta excluída.
+
+  # ==========================================
+  # ROTAS GERAIS E ADMINISTRATIVAS
+  # ==========================================
+  /usuarios/funcionarios:
+    get:
+      summary: Listar Todos Funcionários
+      tags: [Funcionários - Admin]
+      description: Acessível por Admins e outros Funcionários.
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Lista de funcionários.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id_usuario:
+                      type: integer
+                    nome:
+                      type: string
+                    funcionario:
+                      type: object
+                      properties:
+                        is_admin:
+                          type: boolean
+                        unidade:
+                          type: object
+                          properties:
+                            nome:
+                              type: string
+
+    post:
+      summary: Criar Novo Funcionário (Admin)
+      tags: [Funcionários - Admin]
+      description: Rota restrita. Apenas administradores podem cadastrar novos funcionários.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [nome, cpf, senha, id_unidade]
+              properties:
+                nome:
+                  type: string
+                  example: "Ana Paula"
+                cpf:
+                  type: string
+                  example: "98765432100"
+                senha:
+                  type: string
+                  example: "senhaInicial123"
+                is_admin:
+                  type: boolean
+                  example: false
+                  description: Define se o usuário terá permissões totais.
+                id_unidade:
+                  type: integer
+                  example: 1
+                  description: ID da unidade onde o funcionário trabalhará.
+      responses:
+        201:
+          description: Funcionário criado com sucesso.
+        403:
+          description: Acesso negado (Requer Admin).
+        409:
+          description: CPF já cadastrado.
+
+  /usuarios/funcionarios/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        description: ID do funcionário (usuário)
+    
+    get:
+      summary: Buscar Funcionário por ID (Admin)
+      tags: [Funcionários - Admin]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Detalhes do funcionário.
+        404:
+          description: Funcionário não encontrado.
+
+    put:
+      summary: Atualizar Funcionário (Admin)
+      tags: [Funcionários - Admin]
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nome:
+                  type: string
+                is_admin:
+                  type: boolean
+                id_unidade:
+                  type: integer
+      responses:
+        200:
+          description: Funcionário atualizado.
+
+    delete:
+      summary: Deletar Funcionário (Admin)
+      tags: [Funcionários - Admin]
+      security:
+        - bearerAuth: []
+      responses:
+        204:
+          description: Funcionário removido.

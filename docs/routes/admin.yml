@@ -1,0 +1,54 @@
+paths:
+  /unidades:
+    get:
+      summary: Listar Unidades
+      tags: [Unidades]
+      responses:
+        200:
+          description: Lista de unidades
+    post:
+      summary: Criar Unidade (Admin)
+      tags: [Unidades]
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nome:
+                  type: string
+                endereco:
+                  type: string
+      responses:
+        201:
+          description: Unidade criada
+
+  /medicos:
+    get:
+      summary: Listar Médicos
+      tags: [Médicos]
+      responses:
+        200:
+          description: Lista de médicos
+    post:
+      summary: Criar Médico (Admin)
+      tags: [Médicos]
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nome:
+                  type: string
+                crm:
+                  type: integer
+                especialidade:
+                  type: string
+      responses:
+        201:
+          description: Médico criado

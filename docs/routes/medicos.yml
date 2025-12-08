@@ -1,0 +1,101 @@
+paths:
+  /medicos:
+    get:
+      summary: Listar Todos os Médicos
+      tags: [Médicos]
+      responses:
+        200:
+          description: Lista de médicos retornada com sucesso.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id_medico:
+                      type: integer
+                    nome:
+                      type: string
+                    crm:
+                      type: integer
+                    especialidade:
+                      type: string
+
+    post:
+      summary: Criar Novo Médico (Admin)
+      tags: [Médicos]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [nome, crm, especialidade]
+              properties:
+                nome:
+                  type: string
+                  example: "Dr. Roberto Silva"
+                crm:
+                  type: integer
+                  example: 123456
+                especialidade:
+                  type: string
+                  example: "Cardiologia"
+      responses:
+        201:
+          description: Médico criado com sucesso.
+        409:
+          description: CRM já cadastrado.
+
+  /medicos/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        description: ID do médico
+    
+    get:
+      summary: Buscar Médico por ID
+      tags: [Médicos]
+      responses:
+        200:
+          description: Detalhes do médico.
+        404:
+          description: Médico não encontrado.
+
+    put:
+      summary: Atualizar Médico (Admin)
+      tags: [Médicos]
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nome:
+                  type: string
+                crm:
+                  type: integer
+                especialidade:
+                  type: string
+      responses:
+        200:
+          description: Dados do médico atualizados.
+
+    delete:
+      summary: Deletar Médico (Admin)
+      tags: [Médicos]
+      security:
+        - bearerAuth: []
+      responses:
+        204:
+          description: Médico removido do sistema.
+        409:
+          description: Não é possível deletar (associado a calendário).

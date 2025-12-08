@@ -1,0 +1,96 @@
+paths:
+  /unidades:
+    get:
+      summary: Listar Todas as Unidades
+      tags: [Unidades]
+      description: Retorna a lista de todas as unidades de saúde cadastradas.
+      responses:
+        200:
+          description: Lista de unidades retornada com sucesso.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id_unidade:
+                      type: integer
+                    nome:
+                      type: string
+                    endereco:
+                      type: string
+
+    post:
+      summary: Criar Nova Unidade (Admin)
+      tags: [Unidades]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [nome, endereco]
+              properties:
+                nome:
+                  type: string
+                  example: "Hospital Central"
+                endereco:
+                  type: string
+                  example: "Av. Principal, 1000, Centro"
+      responses:
+        201:
+          description: Unidade criada com sucesso.
+        403:
+          description: Acesso negado. Apenas admin.
+
+  /unidades/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        description: ID da unidade
+    
+    get:
+      summary: Buscar Unidade por ID
+      tags: [Unidades]
+      responses:
+        200:
+          description: Detalhes da unidade encontrada.
+        404:
+          description: Unidade não encontrada.
+
+    put:
+      summary: Atualizar Unidade (Admin)
+      tags: [Unidades]
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nome:
+                  type: string
+                  example: "Hospital Central - Ala Sul"
+                endereco:
+                  type: string
+      responses:
+        200:
+          description: Unidade atualizada com sucesso.
+
+    delete:
+      summary: Deletar Unidade (Admin)
+      tags: [Unidades]
+      security:
+        - bearerAuth: []
+      responses:
+        204:
+          description: Unidade deletada com sucesso.
+        409:
+          description: Erro. Unidade vinculada a funcionários ou calendários.

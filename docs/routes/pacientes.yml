@@ -1,0 +1,232 @@
+paths:
+  # ==========================================
+  # ROTA PÚBLICA DE CADASTRO
+  # ==========================================
+  /usuarios/pacientes:
+    post:
+      summary: Criar User Paciente (Cadastro)
+      tags: [Pacientes]
+      description: Cria o usuário, o perfil de paciente e uma ficha médica vazia inicial.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [nome, cpf, email, senha]
+              properties:
+                nome:
+                  type: string
+                  example: "João Silva"
+                cpf:
+                  type: string
+                  example: "12345678900"
+                email:
+                  type: string
+                  format: email
+                  example: "joao@email.com"
+                senha:
+                  type: string
+                  example: "senhaForte123"
+                telefone:
+                  type: string
+                  example: "31999998888"
+                endereco:
+                  type: string
+                  example: "Rua das Flores, 123"
+                # Dados iniciais da ficha
+                tipo_sanguineo:
+                  type: string
+                  example: "O+"
+                alergias:
+                  type: string
+                  example: "Nenhuma"
+      responses:
+        201:
+          description: Paciente criado com sucesso.
+        409:
+          description: CPF já cadastrado.
+
+    get:
+      summary: Listar Todos Pacientes (Admin)
+      tags: [Pacientes - Admin]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Lista completa de pacientes.
+        403:
+          description: Acesso negado (apenas Admin).
+
+  # ==========================================
+  # ROTAS DO PACIENTE LOGADO (MEU PERFIL)
+  # ==========================================
+  /usuarios/pacientes/me:
+    get:
+      summary: Buscar Paciente Logado (Ver meu perfil)
+      tags: [Pacientes - Área do Usuário]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Dados do perfil do usuário logado.
+    
+    put:
+      summary: Atualizar Paciente Logado (Atualizar meu perfil)
+      tags: [Pacientes - Área do Usuário]
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nome:
+                  type: string
+                telefone:
+                  type: string
+                endereco:
+                  type: string
+      responses:
+        200:
+          description: Perfil atualizado.
+
+    delete:
+      summary: Deletar Paciente Logado (Excluir minha conta)
+      tags: [Pacientes - Área do Usuário]
+      security:
+        - bearerAuth: []
+      responses:
+        204:
+          description: Conta excluída com sucesso.
+
+  # ==========================================
+  # FICHA MÉDICA DO PACIENTE LOGADO
+  # ==========================================
+  /usuarios/pacientes/me/ficha-medica:
+    get:
+      summary: Buscar Ficha Paciente Logado (Minha Ficha)
+      tags: [Pacientes - Área do Usuário]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Ficha médica detalhada.
+    
+    put:
+      summary: Atualizar Minha Ficha Médica
+      tags: [Pacientes - Área do Usuário]
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tipo_sanguineo:
+                  type: string
+                alergias:
+                  type: string
+                medicamentos_uso_continuo:
+                  type: string
+                historico_doencas:
+                  type: string
+      responses:
+        200:
+          description: Ficha atualizada.
+
+  # ==========================================
+  # ROTAS ADMINISTRATIVAS (POR ID)
+  # ==========================================
+  /usuarios/pacientes/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        description: ID do usuário/paciente
+    
+    get:
+      summary: Buscar Paciente por ID (Admin)
+      tags: [Pacientes - Admin]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Dados do paciente encontrado.
+        404:
+          description: Paciente não encontrado.
+
+    put:
+      summary: Atualizar Paciente por ID (Admin)
+      tags: [Pacientes - Admin]
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nome:
+                  type: string
+                telefone:
+                  type: string
+                endereco:
+                  type: string
+      responses:
+        200:
+          description: Paciente atualizado.
+
+    delete:
+      summary: Deletar Paciente por ID (Admin)
+      tags: [Pacientes - Admin]
+      security:
+        - bearerAuth: []
+      responses:
+        204:
+          description: Paciente removido.
+  
+  # ==========================================
+  # FICHA MÉDICA VISÃO ADMIN
+  # ==========================================
+  /usuarios/pacientes/{id}/ficha-medica:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+    
+    get:
+      summary: Buscar Ficha Médica de um Paciente (Admin/Func)
+      tags: [Pacientes - Admin]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Ficha médica do paciente.
+    
+    put:
+      summary: Atualizar Ficha Médica de um Paciente (Admin/Func)
+      tags: [Pacientes - Admin]
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tipo_sanguineo:
+                  type: string
+                alergias:
+                  type: string
+                observacoes_medicas:
+                  type: string
+      responses:
+        200:
+          description: Ficha atualizada pelo admin.

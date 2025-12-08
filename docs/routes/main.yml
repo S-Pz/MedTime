@@ -1,0 +1,32 @@
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Erro:
+      type: object
+      properties:
+        error:
+          type: string
+        status:
+          type: integer
+    
+    LoginResponse:
+      type: object
+      properties:
+        status:
+          type: boolean
+        data:
+          type: object
+          properties:
+            token:
+              type: string
+            nome:
+              type: string
+            role:
+              type: string
+            expiresAt:
+              type: integer

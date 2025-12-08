@@ -1,0 +1,52 @@
+paths:
+  /relatorios/quantidade/especialidades:
+    get:
+      summary: Consultas por Especialidade (Admin/Func)
+      tags: [Relatórios]
+      description: Retorna a quantidade total de consultas agendadas agrupadas por especialidade médica.
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Relatório gerado com sucesso.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    especialidade:
+                      type: string
+                      example: "Cardiologia"
+                    quantidade:
+                      type: integer
+                      example: 15
+        403:
+          description: Acesso negado. Requer perfil de Admin ou Funcionário.
+
+  /relatorios/quantidade/unidades:
+    get:
+      summary: Consultas por Unidade (Admin/Func)
+      tags: [Relatórios]
+      description: Retorna a contagem de consultas distribuídas por unidade de saúde.
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Relatório gerado com sucesso.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    unidade:
+                      type: string
+                      example: "Hospital Central"
+                    quantidade:
+                      type: integer
+                      example: 42
+        403:
+          description: Acesso negado. Requer perfil de Admin ou Funcionário.

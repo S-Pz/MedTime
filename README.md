@@ -164,4 +164,11 @@ npm run dev
 Para gerar seu secret do autentication JWT pode-se utilizar esse site:
 
 [JWT-Secret Generator](https://jwtgenerator.com/tools/jwt-generator)
+
+
+# 📜 Documentação
+Para acessar a documentação das rotas, foi implementada uma rota para documetação utilizando o swagger.
+
+`localhost:{port}/api-routes`
+
 </details>

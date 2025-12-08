@@ -1,7 +1,9 @@
 const express = require('express');
 const cors = require('cors');
+const swaggerUi = require('swagger-ui-express');
 
 const routes = require('./routes');
+const swaggerSpec = require('./config/swaggerConfig');
 
 const app = express();
 
@@ -14,6 +16,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api', routes);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Middleware para capturar rotas que não existem
 app.use((req, res, next) => {

@@ -1,0 +1,126 @@
+paths:
+  # ==========================================
+  # ROTAS DO PACIENTE
+  # ==========================================
+  /agendas:
+    post:
+      summary: Agendar uma consulta (Paciente)
+      tags: [Agendas]
+      description: Permite que o paciente agende um horário disponível.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id_calendario_medico, tempo_consulta]
+              properties:
+                id_calendario_medico:
+                  type: integer
+                  description: ID do horário disponível no calendário
+                  example: 1
+                tempo_consulta:
+                  type: string
+                  format: date-time
+                  example: "2023-12-25T14:30:00.000Z"
+      responses:
+        201:
+          description: Consulta agendada com sucesso.
+        404:
+          description: Calendário não encontrado.
+
+    # ==========================================
+    # ROTAS ADMIN / FUNCIONÁRIO (LISTAGEM)
+    # ==========================================
+    get:
+      summary: Listar Consultas (Admin/Func)
+      tags: [Agendas]
+      description: Lista todas as consultas. Use os parâmetros dataInicio e dataFim para filtrar por período (ListarConsultasPorData).
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: dataInicio
+          schema:
+            type: string
+            format: date
+          description: Filtrar a partir desta data (YYYY-MM-DD)
+        - in: query
+          name: dataFim
+          schema:
+            type: string
+            format: date
+          description: Filtrar até esta data (YYYY-MM-DD)
+      responses:
+        200:
+          description: Lista de consultas retornada.
+
+  # ==========================================
+  # ROTA MINHAS CONSULTAS (PACIENTE)
+  # ==========================================
+  /agendas/minhas-consultas:
+    get:
+      summary: Listar Minhas Consultas (Paciente)
+      tags: [Agendas]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Histórico de consultas do paciente logado.
+
+  # ==========================================
+  # OPERAÇÕES POR ID (BUSCAR, ATUALIZAR, CANCELAR)
+  # ==========================================
+  /agendas/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        description: ID da consulta
+    
+    get:
+      summary: Buscar Consulta por ID (Admin/Func)
+      tags: [Agendas]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Detalhes da consulta.
+        404:
+          description: Consulta não encontrada.
+
+    patch:
+      summary: Atualizar Status (Admin/Func)
+      tags: [Agendas]
+      description: Atualiza o status da consulta (ex. realizado, cancelado).
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [agendado, realizado, cancelado]
+                  example: "realizado"
+      responses:
+        200:
+          description: Status atualizado com sucesso.
+
+    delete:
+      summary: Cancelar Consulta (Todos)
+      tags: [Agendas]
+      description: Admin/Func cancelam qualquer uma. Paciente cancela apenas as suas.
+      security:
+        - bearerAuth: []
+      responses:
+        204:
+          description: Consulta cancelada.
