@@ -167,8 +167,8 @@ Para gerar seu secret do autentication JWT pode-se utilizar esse site:
 
 
 # 📜 Documentação
-Para acessar a documentação das rotas, foi implementada uma rota para documetação utilizando o swagger.
+Para acessar a documentação das rotas, foi implementada uma rota para documentação utilizando o swagger.
 
-`localhost:{port}/api-routes`
+`127.0.0.0:{port}/api-routes`
 
 </details>
