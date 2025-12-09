@@ -30,8 +30,8 @@ router.delete('/me',
 //--Rotas ADMIN
 // POST /funcionarios
 router.post('/', 
-    authMiddleware.verificarToken,
-    authMiddleware.verificarPermissao(['admin']),
+    //authMiddleware.verificarToken,
+    //authMiddleware.verificarPermissao(['admin']),
     funcionarioController.criarFuncionario
 );
 

@@ -5,20 +5,25 @@ async function criarFuncionario (funcionario) {
   
     try {
         
+        const { cpf, nome, email, senha, is_admin, id_unidade } = funcionario;
+
         const salt = await bcrypt.genSalt(10);
-        const senhaHash = await bcrypt.hash(funcionario.senha, salt);
+        const senhaHash = await bcrypt.hash(senha, salt);
+
+        const isAdminBoolean = is_admin === true || is_admin === 'true';
 
         const novoFuncionario = await prisma.usuario.create({
             data: {
-                cpf: funcionario.cpf,
-                nome: funcionario.nome,
+                cpf: cpf,
+                nome: nome,
                 senha: senhaHash, 
+                email: email,
                 funcionario: { 
                     create: {
-                        is_admin: funcionario.is_admin,
+                        is_admin: isAdminBoolean,
                         unidade: {
                             connect: { 
-                                id_unidade: parseInt(funcionario.id_unidade)
+                                id_unidade: parseInt(id_unidade)
                             }
                         }
                     },
