@@ -20,6 +20,12 @@ router.put('/:id',
     unidadeController.atualizarUnidade
 );
 
+router.get('/:id/medicos', 
+    // Se quiser proteger:
+    // authMiddleware.verificarToken, 
+    unidadeController.listarMedicosPorUnidade
+);
+
 router.delete('/:id',
     //authMiddleware.verificarToken,
     //authMiddleware.verificarPermissao(['admin']),

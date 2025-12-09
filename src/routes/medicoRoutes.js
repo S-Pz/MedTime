@@ -25,5 +25,8 @@ router.delete('/:id',
     //authMiddleware.verificarPermissao(['admin']),
     medicoController.deletarMedico
 );
-
+router.get('/:id/horarios', 
+    // authMiddleware.verificarToken, // Descomente se quiser proteger
+    medicoController.listarHorarios
+);
 module.exports = router;

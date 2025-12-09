@@ -1,5 +1,36 @@
 const prisma = require ('../config/prismaClient');
 
+async function buscarMedicosDaUnidade(id) {
+    try {
+        const medicos = await prisma.medico.findMany({
+            where: {
+                calendario_medico: {
+                    some: {
+                        id_unidade: parseInt(id)
+                    }
+                }
+            },
+            // Opcional: ordenar por nome
+            orderBy: {
+                nome: 'asc'
+            }
+        });
+
+        return {
+            success: true,
+            data: medicos
+        };
+
+    } catch (error) {
+        console.error('Erro ao buscar médicos da unidade:', error.message);
+        return {
+            success: false,
+            error: 'Erro ao listar médicos da unidade.',
+            status: 500
+        };
+    }
+}
+
 async function criarUnidade(unidade) {
 
     try {
@@ -158,5 +189,6 @@ module.exports = {
     buscarPorId,
     buscarTodas,
     atualizarUnidade,
-    deleteUnidade
+    deleteUnidade,
+    buscarMedicosDaUnidade
 }

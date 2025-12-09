@@ -1,5 +1,20 @@
 const medicoService = require ('../services/medicoService');
 
+async function listarHorarios(req, res) {
+
+    const { id } = req.params;
+
+    const resultado = await medicoService.buscarHorariosDisponiveis(id);
+
+    if (!resultado.success) {
+        return res.status(resultado.status).json({
+            error: resultado.error
+        });
+    }
+
+    res.status(200).json(resultado.data);
+};
+
 async function criarMedico (req, res) {
 
     const resultado = await medicoService.criarMedico(req.body);
@@ -73,5 +88,6 @@ module.exports = {
     listarMedicos,
     buscarMedico,
     atualizarMedico,
-    deletarMedico
+    deletarMedico,
+    listarHorarios
 }

@@ -3,62 +3,72 @@ const prisma = require('../config/prismaClient');
 async function agendarConsulta(id_paciente, dadosConsulta) {
     
     try {
-        const {id_calendario_medico, tempo_consulta} = dadosConsulta;
+        const { id_calendario_medico } = dadosConsulta;
 
-        const calendario = await prisma.calendarioMedico.findUnique({
-            where: { 
-                id_calendario_medico: parseInt(id_calendario_medico) 
+        // Utilizamos uma transação ($transaction) para garantir que
+        // a verificação, criação e atualização aconteçam juntas ou falhem juntas.
+        const resultado = await prisma.$transaction(async (prismaTx) => {
+
+            // 1. Buscar o horário no calendário para ver se existe e se está livre
+            const calendario = await prismaTx.calendarioMedico.findUnique({
+                where: { 
+                    id_calendario_medico: parseInt(id_calendario_medico) 
+                }
+            });
+
+            if (!calendario) {
+                throw new Error('Horário de calendário não encontrado.');
             }
-        });
 
-        if (!calendario) {
-            return {
-                success: false,
-                error: 'Horário de calendário não encontrado.',
-                status: 404
-            };
-        }
+            // 2. Validação de Segurança: O horário ainda está livre?
+            if (calendario.disponivel === false) {
+                throw new Error('Este horário já foi reservado por outro paciente.');
+            }
 
-        const novaConsulta = await prisma.agendaConsulta.create({
-            data: {
-                id_usuario: parseInt(id_paciente),
-                id_calendario_medico: parseInt(id_calendario_medico),
-                status: 'agendado',
-                tempo_consulta: new Date(tempo_consulta)
-            },
-            include: {
-                paciente: {
-                    include: { 
-                        usuario: { 
-                            select: { 
-                                nome: true 
-                            } 
-                        } 
-                    }
+            // 3. Criar a consulta vinculando ao paciente logado (id_paciente)
+            const novaConsulta = await prismaTx.agendaConsulta.create({
+                data: {
+                    id_usuario: parseInt(id_paciente), // ID vindo do token
+                    id_calendario_medico: parseInt(id_calendario_medico),
+                    status: 'agendado',
+                    // Pegamos o horário exato do slot do calendário para garantir consistência
+                    tempo_consulta: calendario.horario_inicio 
                 },
-                calendario_medico: {
-                    include: { 
-                        medico: true, 
-                        unidade: true 
+                include: {
+                    paciente: {
+                        include: { usuario: { select: { nome: true } } } 
+                    },
+                    calendario_medico: {
+                        include: { medico: true, unidade: true }
                     }
                 }
-            }
+            });
+
+            // 4. Atualizar o calendário para INDISPONÍVEL (false)
+            await prismaTx.calendarioMedico.update({
+                where: { id_calendario_medico: parseInt(id_calendario_medico) },
+                data: { disponivel: false }
+            });
+
+            return novaConsulta;
         });
 
         return {
             success: true,
-            data: novaConsulta
+            data: resultado
         };
 
     } catch (error) {
         console.error('Erro ao agendar consulta:', error.message);
-        if (error.code === 'P2003') {
-            return {
-                success: false,
-                error: 'Paciente ou Calendário não encontrado.',
-                status: 404
-            };
+        
+        // Retornar erros específicos para o controller saber qual status code usar
+        if (error.message === 'Este horário já foi reservado por outro paciente.') {
+            return { success: false, error: error.message, status: 409 }; // Conflict
         }
+        if (error.message === 'Horário de calendário não encontrado.') {
+            return { success: false, error: error.message, status: 404 }; // Not Found
+        }
+
         return {
             success: false,
             error: 'Erro ao agendar consulta.',
@@ -251,34 +261,50 @@ async function cancelarConsulta(id_consulta, usuario) {
     try {
         const id_consulta_int = parseInt(id_consulta);
 
-        if (usuario.role === 'paciente') {
-            const consulta = await prisma.agendaConsulta.findUnique({
-                where: { 
-                    id_consulta: id_consulta_int 
+        // 1. Buscamos a consulta primeiro para pegar o ID do calendário e validar o dono
+        const consulta = await prisma.agendaConsulta.findUnique({
+            where: { 
+                id_consulta: id_consulta_int 
+            }
+        });
+
+        if (!consulta) {
+            return {
+                success: false,
+                error: 'Consulta não encontrada.',
+                status: 404
+            };
+        }
+
+        // 2. Verificação de Segurança
+        // Se for paciente, verifique se a consulta pertence a ele
+        if (usuario.role === 'paciente' && consulta.id_usuario !== usuario.id) {
+            return {
+                success: false,
+                error: 'Acesso negado. Você só pode cancelar suas próprias consultas.',
+                status: 403
+            };
+        }
+
+        // 3. Transação: Deleta a consulta E Libera o horário
+        await prisma.$transaction(async (prismaTx) => {
+            
+            // Passo A: Deleta o registro da consulta
+            await prismaTx.agendaConsulta.delete({
+                where: {
+                    id_consulta: id_consulta_int
                 }
             });
 
-            if (!consulta) {
-                return {
-                    success: false,
-                    error: 'Consulta não encontrada.',
-                    status: 404
-                };
-            }
-
-            if (consulta.id_usuario !== usuario.id) {
-                return {
-                    success: false,
-                    error: 'Acesso negado. Você só pode cancelar suas próprias consultas.',
-                    status: 403
-                };
-            }
-        }
-        
-        await prisma.agendaConsulta.delete({
-            where: {
-                id_consulta: id_consulta_int
-            }
+            // Passo B: Atualiza o calendário para ficar DISPONÍVEL novamente
+            await prismaTx.calendarioMedico.update({
+                where: {
+                    id_calendario_medico: consulta.id_calendario_medico
+                },
+                data: {
+                    disponivel: true 
+                }
+            });
         });
 
         return {
@@ -288,13 +314,15 @@ async function cancelarConsulta(id_consulta, usuario) {
 
     } catch (error) {
         console.error('Erro ao cancelar consulta:', error.message);
+        
         if (error.code === 'P2025') {
             return {
                 success: false,
-                error: 'Consulta não encontrada para cancelar.',
+                error: 'Consulta já foi excluída ou não existe.',
                 status: 404
             };
         }
+
         return {
             success: false,
             error: 'Erro ao cancelar consulta.',

@@ -77,7 +77,8 @@ model CalendarioMedico {
   dia_semana           DateTime
   horario_inicio       DateTime?
   horario_fim          DateTime?
-
+  disponivel           Boolean  @default(true)
+  
   medico  Medico  @relation(fields: [id_medico], references: [id_medico])
   unidade Unidade @relation(fields: [id_unidade], references: [id_unidade])
   

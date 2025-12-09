@@ -1,6 +1,21 @@
 const { $executeRawUnsafe } = require('../config/prismaClient');
 const unidadeService = require ('../services/unidadeService');
 
+async function listarMedicosPorUnidade(req, res) {
+    
+    const { id } = req.params;
+
+    const resultado = await unidadeService.buscarMedicosDaUnidade(id);
+
+    if (!resultado.success) {
+        return res.status(resultado.status).json({
+            error: resultado.error
+        });
+    }
+
+    res.status(200).json(resultado.data);
+};
+
 async function criarUnidade (req, res) {
 
     const resultado = await unidadeService.criarUnidade(req.body);
@@ -74,5 +89,7 @@ module.exports = {
     listarUnidades,
     buscarUnidade,
     atualizarUnidade,
-    deletarUnidade
+    deletarUnidade,
+    listarMedicosPorUnidade
+    
 }

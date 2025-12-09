@@ -1,5 +1,33 @@
 const funcionarioService = require ('../services/funcionarioService');
 
+// Adicione esta função junto com as do "Funcionário LOGADO"
+async function buscarMinhaUnidade(req, res) {
+    
+    // O ID vem do middleware de autenticação (token)
+    const { id } = req.usuario; 
+
+    // Reutilizamos o serviço existente que já faz o join com Unidade
+    const resultado = await funcionarioService.buscarPorId(id);
+
+    if (!resultado.success) {
+        return res.status(resultado.status).json({
+            error: resultado.error
+        });
+    }
+
+    // O serviço retorna o funcionário completo. Aqui extraímos só a unidade.
+    const unidade = resultado.data.unidade;
+
+    if (!unidade) {
+        return res.status(404).json({
+            error: 'Nenhuma unidade associada ao seu perfil.'
+        });
+    }
+
+    // Retorna o objeto da unidade diretamente
+    res.status(200).json(unidade);
+};
+
 async function criarFuncionario (req, res) {
     
     const resultado = await funcionarioService.criarFuncionario(req.body);
@@ -116,5 +144,6 @@ module.exports = {
     deletarFuncionario,
     buscarMeuPerfil,
     atualizarMeuPerfil,
-    deletarMeuPerfil
+    deletarMeuPerfil,
+    buscarMinhaUnidade
 }

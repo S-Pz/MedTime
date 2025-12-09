@@ -13,6 +13,12 @@ router.get('/me',
     funcionarioController.buscarMeuPerfil
 );
 
+router.get('/me/unidade',
+    authMiddleware.verificarToken,
+    authMiddleware.verificarPermissao(['admin', 'funcionario']),
+    funcionarioController.buscarMinhaUnidade
+);
+
 //Funcionário atualiza o próprio perfil
 router.put('/me',
     authMiddleware.verificarToken,

@@ -1,5 +1,41 @@
 const prisma = require ('../config/prismaClient');
 
+async function buscarHorariosDisponiveis(id) {
+    try {
+        const horarios = await prisma.calendarioMedico.findMany({
+            where: {
+                id_medico: parseInt(id),
+                disponivel: true // Apenas horários livres
+            },
+            include: {
+                unidade: { // Inclui os dados da unidade para saber onde é o atendimento
+                    select: {
+                        nome: true,
+                        endereco: true
+                    }
+                }
+            },
+            orderBy: [
+                { dia_semana: 'asc' },   // Ordena por dia
+                { horario_inicio: 'asc' } // Ordena por hora
+            ]
+        });
+
+        return {
+            success: true,
+            data: horarios
+        };
+
+    } catch (error) {
+        console.error('Erro ao buscar horários do médico:', error.message);
+        return {
+            success: false,
+            error: 'Erro ao listar horários disponíveis.',
+            status: 500
+        };
+    }
+}
+
 async function criarMedico(medico) {
 
     try {
@@ -140,12 +176,35 @@ async function atualizarMedico(id, medico){
 }
 
 async function deleteMedico(id) {
-
     try {
-        await prisma.medico.delete({
-            where: {
-                id_medico: parseInt(id)
-            },
+        const idMedico = parseInt(id);
+
+        // Usamos $transaction para garantir que tudo seja deletado ou nada seja
+        await prisma.$transaction(async (prismaTx) => {
+            
+            // 1. Apaga todas as consultas agendadas para os horários deste médico
+            // Precisamos filtrar através do relacionamento com o calendario_medico
+            await prismaTx.agendaConsulta.deleteMany({
+                where: {
+                    calendario_medico: {
+                        id_medico: idMedico
+                    }
+                }
+            });
+
+            // 2. Apaga todos os horários (calendários) deste médico
+            await prismaTx.calendarioMedico.deleteMany({
+                where: {
+                    id_medico: idMedico
+                }
+            });
+
+            // 3. Finalmente, apaga o médico
+            await prismaTx.medico.delete({
+                where: {
+                    id_medico: idMedico
+                }
+            });
         });
 
         return {
@@ -154,7 +213,7 @@ async function deleteMedico(id) {
         };
 
     } catch (error) {
-        console.error('Erro ao deletar médico', error.message);
+        console.error('Erro ao deletar médico (cascade):', error.message);
 
         if (error.code === 'P2025') {
             return {
@@ -164,17 +223,9 @@ async function deleteMedico(id) {
             };
         }
 
-        if (error.code === 'P2003') {
-            return {
-                success: false,
-                error: 'Não é possível deletar este médico, pois está associado a um calendário.',
-                status: 409
-            };
-        }
-
         return {
             success: false,
-            error: 'Erro ao deletar médico.',
+            error: 'Erro ao deletar médico e seus registros associados.',
             status: 500
         };
     }
@@ -185,5 +236,6 @@ module.exports = {
     buscarPorId,
     buscarTodos,
     atualizarMedico,
-    deleteMedico
+    deleteMedico,
+    buscarHorariosDisponiveis
 }
